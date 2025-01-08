@@ -11,6 +11,24 @@ Project Object Detection và Object Tracking cho custom dataset, triển khai th
 - Feature2: Multiple detection models. `yolov8n`, `yolov8s`, `yolov8m`, `yolov8l`, `yolov8x`
 - Feature3: Multiple input formats. `Image`, `Video`, `Webcam`
 
+
+## Cấu hình để tải dữ liệu từ Roboflow
+
+Để sử dụng tập dữ liệu đã được chuẩn bị sẵn trên Roboflow, chúng ta cần cấu hình hệ thống để tải dữ liệu từ nền tảng này.
+
+### Chỉnh sửa file config.yaml
+
+1. **Mở file:** Sử dụng trình soạn thảo văn bản để mở file `config/config.yaml`.
+2. **Tìm đến dòng:** Tìm đến dòng chứa tùy chọn `roboflow_option`.
+3. **Đặt giá trị:** Đặt giá trị của tùy chọn này thành `True`.
+
+```yaml
+# config/config.yaml
+roboflow_option: True  # Cấu hình để tải dữ liệu từ Roboflow. 
+                       # Khi đặt thành True, hệ thống sẽ tải dữ liệu từ Roboflow 
+                       # thay vì từ nguồn dữ liệu khác.
+```
+
 ## Installation
 ### Create a new conda environment
 ```commandline
@@ -60,4 +78,6 @@ Create a directory named `weights` and create a subdirectory named `detection` a
 streamlit run app.py
 ```
 Then will start the Streamlit server and open your web browser to the default Streamlit page automatically.
+
+
 
