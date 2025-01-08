@@ -13,3 +13,5 @@ tqdm
 python-box
 # roboflow
 python-dotenv
+
+-e .
