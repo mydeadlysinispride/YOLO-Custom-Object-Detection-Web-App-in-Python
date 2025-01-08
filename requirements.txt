@@ -6,3 +6,10 @@ opencv-python
 Pillow
 openvino
 openvino-dev
+pyYAML
+ensure
+joblib
+tqdm
+python-box
+# roboflow
+python-dotenv

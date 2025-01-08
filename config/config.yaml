@@ -1,0 +1,9 @@
+artifacts_root: artifacts
+
+
+data_ingestion:
+  roboflow_option: True
+  root_dir: artifacts/data_ingestion
+  source_URL: https://app.roboflow.com/ds/uxrVmyOxt4?key=${ROBOFLOW_API_KEY}
+  local_data_file: artifacts/data_ingestion/data.zip
+  unzip_dir: artifacts/data_ingestion

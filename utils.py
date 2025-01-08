@@ -7,9 +7,9 @@ import tempfile
 
 def _display_detected_frames(conf, model, st_frame, image):
     """
-    Display the detected objects on a video frame using the YOLOv8 model.
+    Display the detected objects on a video frame using the YOLO11 model.
     :param conf (float): Confidence threshold for object detection.
-    :param model (YOLOv8): An instance of the `YOLOv8` class containing the YOLOv8 model.
+    :param model (YOLO11): An instance of the `YOLO11` class containing the YOLO11 model.
     :param st_frame (Streamlit object): A Streamlit object to display the detected video.
     :param image (numpy array): A numpy array representing the video frame.
     :return: None
@@ -17,7 +17,7 @@ def _display_detected_frames(conf, model, st_frame, image):
     # Resize the image to a standard size
     image = cv2.resize(image, (720, int(720 * (9 / 16))))
 
-    # Predict the objects in the image using YOLOv8 model
+    # Predict the objects in the image using YOLO11 model
     res = model.predict(image, conf=conf)
 
     # Plot the detected objects on the video frame
@@ -47,8 +47,8 @@ def load_model(model_path):
 def infer_uploaded_image(conf, model):
     """
     Execute inference for uploaded image
-    :param conf: Confidence of YOLOv8 model
-    :param model: An instance of the `YOLOv8` class containing the YOLOv8 model.
+    :param conf: Confidence of YOLO11 model
+    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
     :return: None
     """
     source_img = st.sidebar.file_uploader(
@@ -92,8 +92,8 @@ def infer_uploaded_image(conf, model):
 def infer_uploaded_video(conf, model):
     """
     Execute inference for uploaded video
-    :param conf: Confidence of YOLOv8 model
-    :param model: An instance of the `YOLOv8` class containing the YOLOv8 model.
+    :param conf: Confidence of YOLO11 model
+    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
     :return: None
     """
     source_video = st.sidebar.file_uploader(
@@ -129,8 +129,8 @@ def infer_uploaded_video(conf, model):
 def infer_uploaded_webcam(conf, model):
     """
     Execute inference for webcam.
-    :param conf: Confidence of YOLOv8 model
-    :param model: An instance of the `YOLOv8` class containing the YOLOv8 model.
+    :param conf: Confidence of YOLO11 model
+    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
     :return: None
     """
     run_button = st.empty()
