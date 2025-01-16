@@ -137,7 +137,7 @@ def infer_uploaded_video(conf, model):
 
     # Nhập khu vực phát hiện
     use_zone = st.sidebar.checkbox("Enable Zone Detection", value=True)
-    area = None
+    area = []
 
     if use_zone:
         # Đọc tọa độ zone từ file dangerzone.txt
@@ -170,6 +170,8 @@ def infer_uploaded_video(conf, model):
                         success, image = vid_cap.read()
                         if success:
                             # Hiển thị frame và kiểm tra vi phạm
+                            if area_input:
+                                area = [tuple(map(int, point.split(','))) for point in area_input.split(';')]
                             _display_detected_frames(conf, model, st_frame, image, area)
                         else:
                             vid_cap.release()
