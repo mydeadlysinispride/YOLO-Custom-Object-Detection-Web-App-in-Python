@@ -38,7 +38,7 @@ while True:
 
             # Vẽ bounding box lên frame
             color = (0, 255, 0) if class_name == 'Full PPE' else (0, 0, 255)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness=1)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), color, thickness=2)
             cv2.putText(frame, f'{class_name} {conf}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
             # Lấy tâm của bounding box

@@ -36,9 +36,11 @@ SOURCES_LIST = ["Image", "Video", "Webcam"]
 
 # DL model config
 DETECTION_MODEL_DIR = ROOT / 'weights' / 'detection'
-YOLOv8n = DETECTION_MODEL_DIR / "yolo11n_openvino_model"
-YOLOv8s = DETECTION_MODEL_DIR / "yolo11s_openvino_model"
+YOLO11n = DETECTION_MODEL_DIR / "yolo11n_openvino_model"
+YOLO11s = DETECTION_MODEL_DIR / "yolo11s_openvino_model"
+YOLO11m = DETECTION_MODEL_DIR / "yolo11m_openvino_model"
 
 DETECTION_MODEL_LIST = [
     "yolo11n_openvino_model/",
-    "yolo11s_openvino_model/"]
+    "yolo11s_openvino_model/",
+    "yolo11m_openvino_model/"]
