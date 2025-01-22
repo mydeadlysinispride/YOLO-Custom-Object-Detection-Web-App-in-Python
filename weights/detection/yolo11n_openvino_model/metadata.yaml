@@ -1,8 +1,8 @@
 description: Ultralytics YOLO11n model trained on /content/drive/MyDrive/Object Detection/Personal
-  Protective Equipment Detection/datasets/Personal-Protective-Equipments-6/data.yaml
+  Protective Equipment Detection/datasets/Personal-Protective-Equipments-8/data.yaml
 author: Ultralytics
-date: '2024-12-31T03:53:33.120114'
-version: 8.3.55
+date: '2025-01-22T02:29:12.911834'
+version: 8.3.65
 license: AGPL-3.0 License (https://ultralytics.com/license)
 docs: https://docs.ultralytics.com
 stride: 32
@@ -15,3 +15,8 @@ names:
   0: Full PPE
   1: Incomplete PPE
   2: No PPE
+args:
+  batch: 1
+  half: false
+  int8: true
+  dynamic: false

@@ -7,3 +7,11 @@ data_ingestion:
   source_URL: https://app.roboflow.com/ds/uxrVmyOxt4?key=${ROBOFLOW_API_KEY}
   local_data_file: artifacts/data_ingestion/data.zip
   unzip_dir: artifacts/data_ingestion
+
+data_validation:
+  root_dir: artifacts/data_validation
+  unzip_data_dir: artifacts/data_ingestion
+  image_dir: artifacts/data_validation/train/images
+  label_dir: artifacts/data_validation/train/labels
+  STATUS_FILE: artifacts/data_validation/status.txt
+  class_file: artifacts/data_validation/data.yaml

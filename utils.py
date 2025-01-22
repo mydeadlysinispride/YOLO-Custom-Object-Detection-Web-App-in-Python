@@ -4,10 +4,10 @@ import cv2
 from PIL import Image
 import tempfile
 import numpy as np
-
+import time
 class_list = ['Full PPE', 'Incomplete PPE', 'No PPE']
 
-def _display_detected_frames(conf, model, st_frame, image, area=None):
+def _display_detected_frames(conf, model, st_frame, image, area=None, fps=None):
     """
     Display the detected objects on a video frame using the YOLO11 model.
     :param conf (float): Confidence threshold for object detection.
@@ -15,6 +15,7 @@ def _display_detected_frames(conf, model, st_frame, image, area=None):
     :param st_frame (Streamlit object): A Streamlit object to display the detected video.
     :param image (numpy array): A numpy array representing the video frame.
     :param area (list): Optional list of points representing the detection area.
+    :param fps (float): Frames per second.
     :return: None
     """
     # Resize the image to a standard size
@@ -58,8 +59,111 @@ def _display_detected_frames(conf, model, st_frame, image, area=None):
     if not alarm_triggered:
         cv2.putText(image, "OK", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 3)
 
+    # Display FPS in the top-right corner
+    if fps is not None:
+        cv2.putText(image, f"FPS: {fps:.2f}", (image.shape[1] - 150, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
     # Plot the detected objects on the video frame
     st_frame.image(image, caption='Detected Video', channels="BGR", use_container_width=True)
+
+
+def infer_uploaded_video(conf, model):
+    """
+    Execute inference for uploaded video
+    :param conf: Confidence of YOLO11 model
+    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
+    :return: None
+    """
+    source_video = st.sidebar.file_uploader(
+        label="Choose a video..."
+    )
+
+    use_zone = st.sidebar.checkbox("Enable Zone Detection", value=True)
+    area = []
+
+    if use_zone:
+        try:
+            with open('dangerzone.txt', 'r') as file:
+                default_area = file.read().strip()
+        except FileNotFoundError:
+            default_area = "353,391;446,390;443,180;364,180"
+
+        area_input = st.text_area(
+            "Enter detection area coordinates (format: x1,y1;x2,y2;x3,y3;x4,y4)",
+            value=default_area
+        )
+
+    if source_video:
+        st.video(source_video)
+
+    if source_video:
+        if st.button("Execution"):
+            with st.spinner("Running..."):
+                try:
+                    tfile = tempfile.NamedTemporaryFile()
+                    tfile.write(source_video.read())
+                    vid_cap = cv2.VideoCapture(tfile.name)
+                    st_frame = st.empty()
+
+                    prev_time = time.time()
+                    while vid_cap.isOpened():
+                        success, image = vid_cap.read()
+                        if success:
+                            current_time = time.time()
+                            fps = 1 / (current_time - prev_time)
+                            prev_time = current_time
+
+                            if area_input:
+                                area = [tuple(map(int, point.split(','))) for point in area_input.split(';')]
+                            _display_detected_frames(conf, model, st_frame, image, area, fps)
+                        else:
+                            vid_cap.release()
+                            break
+                except Exception as e:
+                    st.error(f"Error loading video: {e}")
+
+
+def infer_uploaded_webcam(conf, model):
+    """
+    Execute inference for webcam.
+    :param conf: Confidence of YOLO11 model
+    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
+    :return: None
+    """
+    run_button = st.empty()
+    stop_button = st.empty()
+    
+    run = run_button.button("Run")
+    stop = stop_button.button("Stop running")
+
+    if run:
+        try:
+            vid_cap = cv2.VideoCapture(0)  # local camera
+            st_frame = st.empty()
+            prev_time = time.time()
+            while not stop:
+                success, image = vid_cap.read()
+                if success:
+                    current_time = time.time()
+                    fps = 1 / (current_time - prev_time)
+                    prev_time = current_time
+
+                    _display_detected_frames(
+                        conf,
+                        model,
+                        st_frame,
+                        image,
+                        fps=fps
+                    )
+                else:
+                    vid_cap.release()
+                    break
+        except Exception as e:
+            st.error(f"Error loading video: {str(e)}")
+        finally:
+            vid_cap.release()
+            run_button.empty()
+            stop_button.empty()
 
 
 
@@ -123,94 +227,3 @@ def infer_uploaded_image(conf, model):
                         st.write(ex)
 
 
-def infer_uploaded_video(conf, model):
-    """
-    Execute inference for uploaded video
-    :param conf: Confidence of YOLO11 model
-    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
-    :return: None
-    """
-    # Tải video lên từ sidebar
-    source_video = st.sidebar.file_uploader(
-        label="Choose a video..."
-    )
-
-    # Nhập khu vực phát hiện
-    use_zone = st.sidebar.checkbox("Enable Zone Detection", value=True)
-    area = []
-
-    if use_zone:
-        # Đọc tọa độ zone từ file dangerzone.txt
-        try:
-            with open('dangerzone.txt', 'r') as file:
-                default_area = file.read().strip()
-        except FileNotFoundError:
-            default_area = "353,391;446,390;443,180;364,180"  # Giá trị mặc định nếu file không tồn tại
-
-        # Hiển thị text area cho người dùng chỉnh sửa nếu cần
-        area_input = st.text_area(
-            "Enter detection area coordinates (format: x1,y1;x2,y2;x3,y3;x4,y4)",
-            value=default_area
-        )
-
-    if source_video:
-        st.video(source_video)
-
-    if source_video:
-        if st.button("Execution"):
-            with st.spinner("Running..."):
-                try:
-                    # Đọc video từ file upload
-                    tfile = tempfile.NamedTemporaryFile()
-                    tfile.write(source_video.read())
-                    vid_cap = cv2.VideoCapture(tfile.name)
-                    st_frame = st.empty()
-
-                    while vid_cap.isOpened():
-                        success, image = vid_cap.read()
-                        if success:
-                            # Hiển thị frame và kiểm tra vi phạm
-                            if area_input:
-                                area = [tuple(map(int, point.split(','))) for point in area_input.split(';')]
-                            _display_detected_frames(conf, model, st_frame, image, area)
-                        else:
-                            vid_cap.release()
-                            break
-                except Exception as e:
-                    st.error(f"Error loading video: {e}")
-
-def infer_uploaded_webcam(conf, model):
-    """
-    Execute inference for webcam.
-    :param conf: Confidence of YOLO11 model
-    :param model: An instance of the `YOLO11` class containing the YOLO11 model.
-    :return: None
-    """
-    run_button = st.empty()
-    stop_button = st.empty()
-    
-    run = run_button.button("Run")
-    stop = stop_button.button("Stop running")
-
-    if run:
-        try:
-            vid_cap = cv2.VideoCapture(0)  # local camera
-            st_frame = st.empty()
-            while not stop:
-                success, image = vid_cap.read()
-                if success:
-                    _display_detected_frames(
-                        conf,
-                        model,
-                        st_frame,
-                        image
-                    )
-                else:
-                    vid_cap.release()
-                    break
-        except Exception as e:
-            st.error(f"Error loading video: {str(e)}")
-        finally:
-            vid_cap.release()
-            run_button.empty()
-            stop_button.empty()
